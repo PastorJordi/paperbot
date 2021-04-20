@@ -3,6 +3,8 @@ from flask import Flask
 from slackeventsapi import SlackEventAdapter
 import os
 from download_example import download_by_doi
+
+# so the issue is that it runs slow...https://github.com/slackapi/python-slack-sdk/issues/801
 # template copy-pasted from this guy # https://www.youtube.com/watch?v=6gHvqXrfjuo
 
 app = Flask(__name__)
@@ -19,6 +21,7 @@ BOT_ID = client.api_call('auth.test')['user_id']
 #client.chat_postMessage(channel='#testbots', text=f'bot id = {BOT_ID}')
 
 def refined_doi(wheretopost,doi):
+    print(doi)
     ret, pth = download_by_doi(doi)
     if ret:
         client.files_upload(channels=wheretopost, file=pth, initial_comment='I hope is this one')
