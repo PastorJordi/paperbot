@@ -14,9 +14,10 @@ slack_event_adapter = SlackEventAdapter(
 
 
 client = slack.WebClient(token=os.environ['SLACK_BOT_TOKEN'])
+client.chat_postMessage(channel='#testbots', text='pre-connected')
 BOT_ID = client.api_call('auth.test')['user_id']
-
-@slack_event_adapter.on('message')
+client.chat_postMessage(channel='#testbots', text=f'bot id = {BOT_ID}')
+@slack_event_adapter.on('app_mention')
 def message(payload):
     event = payload.get('event', {})
     channel_id = event.get('channel')
