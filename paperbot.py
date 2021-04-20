@@ -1,7 +1,9 @@
-#import slack # not being used
+import slack 
 from flask import Flask
 from slackeventsapi import SlackEventAdapter
 import os
+
+# copy pasted from this guy
 
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(
@@ -11,5 +13,17 @@ slack_event_adapter = SlackEventAdapter(
 )
 
 
+client = slack.WebClient(token=os.environ['SLACK_BOT_TOKEN'])
+BOT_ID = client.api_call('auth.test')['user_id']
+
+@slack_event_adapter.on('message')
+def message(payload):
+    event = payload.get('event', {})
+    channel_id = event.get('channel')
+    user_id = event.get('user')
+    text= event.get('text')
+    if user_id!=BOT_ID:
+        client.chat_postMessage(channel=channel_id, text='message aknowledged\n'+text)
+
 if __name__ == '__main__':
-    app.run(debug=True) # add port=int
+    app.run(debug=True, host='0.0.0.0') # add port=int
